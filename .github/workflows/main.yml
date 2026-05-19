@@ -7,11 +7,10 @@ env:
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
+      - develop
 
 jobs:
   build:
@@ -21,12 +20,25 @@ jobs:
       - name: install vercel
         run: npm install --global vercel@latest
 
-      - name: Pull Vercel env information
-        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy to vercel preview(dev)
+        if: github.ref == 'refs/head/develop'
+        run: |
+          vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
 
-      - name: Build Project
-        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+          vercel build --token=${{ secrets.VERCEL_TOKEN }}
 
-      - name: Deploy to vercel
-        run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
+          vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy to vercel production
+        if: github.ref == 'refs/head/main'
+        run: |
+          vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+          vercel build --token=${{ secrets.VERCEL_TOKEN }}
+
+          vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
+
+
+
+        
           
