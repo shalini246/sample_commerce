@@ -10,8 +10,8 @@ on:
   pull_request:
     branches:
       - main
-      - uat
       - develop
+      - feature
 
 jobs:
   build:
